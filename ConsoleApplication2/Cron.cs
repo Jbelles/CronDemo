@@ -13,16 +13,16 @@ namespace ConsoleApplication2
 
             //FORMAT
             //SECONDS || MINUTES ||   HOURS  || DAYS OF THE MONTH || MONTH || DAYS OF THE WEEK || (optional) YEAR
-            //   0    ||    0    ||  18-22/2  ||        ?          ||   *   || MON,TUE,WED,THUR,FRI (or 1,2,3,4,5) || (nothing)
+            //   0    ||    0    ||  18-22/2 ||        ?          ||   *   || MON,TUE,WED,THUR,FRI  || (nothing)
+            // "0 0 18-22/2 ? * MON,TUE,WED,THUR,FRI"
             //Example Above = every 2 hours starting from 6pm to 10pm Monday - Friday
-
-
 
             //Check if the task should just be considerred daily
             if (days.Length> 6 )
             {
                 return GenerateDailyExpression(StartTime);
             }
+            string DayName = "";
             string DaysToSchedule = "";
             //schedule Seconds
             DaysToSchedule = DaysToSchedule.Insert(DaysToSchedule.Length,  StartTime.Seconds + " ");
@@ -52,19 +52,44 @@ namespace ConsoleApplication2
             //we don't need to worry about months for a Weekly schedule
             DaysToSchedule = DaysToSchedule.Insert(DaysToSchedule.Length, "* ");
 
-            foreach (int day in days)
+            foreach (DayOfWeek day in days)
             {
-                DaysToSchedule = DaysToSchedule.Insert(DaysToSchedule.Length, day.ToString() + ",");
+                switch ((int)day)//reassign DayOfWeek to string
+                {
+                    case 0:
+                        DayName = "SUN";
+                        break;
+                    case 1:
+                        DayName = "MON";
+                        break;
+                    case 2:
+                        DayName = "TUE";
+                        break;
+                    case 3:
+                        DayName = "WED";
+                        break;
+                    case 4:
+                        DayName = "THU";
+                        break;
+                    case 5:
+                        DayName = "FRI";
+                        break;
+                    case 6:
+                        DayName = "SAT";
+                        break;
+                }
+                DaysToSchedule = DaysToSchedule.Insert(DaysToSchedule.Length, DayName + ",");
             }
-
+            //pull off a trailing comma
             DaysToSchedule = DaysToSchedule.Remove(DaysToSchedule.Length-1);
-            //DaysToSchedule = DaysToSchedule.Insert(DaysToSchedule.Length, " ");
+
             return DaysToSchedule;
 
         }
 
         public string GenerateDailyExpression(TimeSpan TimeOfDay = default(TimeSpan))
         {
+            //simple version of above for every day schedules
             string schedule = "";
             schedule = schedule.Insert(schedule.Length, TimeOfDay.Seconds + " ");
             schedule = schedule.Insert(schedule.Length, TimeOfDay.Minutes + " ");
@@ -74,11 +99,6 @@ namespace ConsoleApplication2
 
             schedule = schedule.Insert(schedule.Length, "*");
             return schedule;
-        }
-
-        public static void Main()
-        {
-
         }
     }
 }
